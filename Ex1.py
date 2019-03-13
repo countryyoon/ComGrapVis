@@ -1,36 +1,31 @@
 import cv2
 import numpy as np
-#from pynput.keyboard import Key, Controller
-#/home/countryyoon/01.jpg
+
+#이미지주소 : /home/countryyoon/01.jpg
 
 def display_size(img): #이미지의 width, height, depth 왼쪽 상단에 표시
     c_img = img
     w, h, d = c_img.shape
     strr = "w:" + str(w) + ", h:" + str(h) + " ,d:" + str(d)
     cv2.putText(c_img, strr, (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0))
-    cv2.imshow('imageNsize', c_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    return c_img
 
 
 def gray_scale(img): #회색조 이미지로 변경
     c_img = img
     img_gray = cv2.cvtColor(c_img, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('imageNgray', img_gray)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    return img_gray
 
 
 def original_image(img): #원래 이미지 표시
     c_img = img
     cv2.imshow('image', c_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    return c_img
 
 
 def mosaic_image(img): #모자이크 이미지
-    size_x = int(input("가로 블럭 수: "))
-    size_y = int(input("세로 블럭 수: "))
+    size_x = int(input("행 블럭 수: "))
+    size_y = int(input("열 블럭 수: "))
 
     height, width, depth = img.shape
     org_img = np.zeros_like(img)
@@ -89,12 +84,11 @@ def mosaic_image(img): #모자이크 이미지
                             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0))
                 org_img[x_start:x_end, y_start:y_end] = block
 
-    cv2.imshow('mosaic_image', org_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    return org_img
 
 
 def loop_exit(): #루프종료
+    print("실행을 종료합니다.")
     exit()
 
 
@@ -102,27 +96,22 @@ def loop_exit(): #루프종료
 if __name__ == "__main__":
     path = input("파일명을 입력하세요: ")
     original_img = cv2.imread(path, 1)
-    cv2.imshow('image', original_img)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    img_show = original_img
+    k = None
 
     while True:
-        #cv2.waitKey()
-        k = input()
-        if k == 'r':
-            display_size(original_img)
-
-        elif k == 'g': #k.press('g'): # k == ord('g'):
-            gray_scale(original_img)
-
-        elif k == 'c': #k.press('c'): #k == ord('c'):
-            original_image(original_img)
-
-        elif k == 'm': #k.press('m'): #k == ord('m'):
-            mosaic_image(original_img)
-
-        elif k == 'q': #k.press('q'): #k == ord('q'):
+        if k == ord('r'):
+            img_show = display_size(original_img)
+            original_img = cv2.imread(path, 1)
+        elif k == ord('g'):
+            img_show = gray_scale(original_img)
+        elif k == ord('c'):
+            img_show = original_image(original_img)
+        elif k == ord('m'):
+            img_show = mosaic_image(original_img)
+        elif k == ord('q'):
             loop_exit()
 
-        else:
-            pass
+        cv2.imshow('image', img_show)
+        k = cv2.waitKey()
+        cv2.destroyAllWindows()
