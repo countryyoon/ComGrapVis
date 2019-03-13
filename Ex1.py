@@ -3,10 +3,10 @@ import numpy as np
 
 #이미지주소 : /home/countryyoon/01.jpg
 
-def display_size(img): #이미지의 width, height, depth 왼쪽 상단에 표시
+def display_text(img, path): #이미지의 width, height, depth 왼쪽 상단에 표시
     c_img = img
     w, h, d = c_img.shape
-    strr = "w:" + str(w) + ", h:" + str(h) + " ,d:" + str(d)
+    strr = path + "  w:" + str(w) + ", h:" + str(h) + " ,d:" + str(d)
     cv2.putText(c_img, strr, (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0))
     return c_img
 
@@ -48,7 +48,7 @@ def mosaic_image(img): #모자이크 이미지
                 block = np.zeros_like(org_img[x_start:x_end, y_start:y_end])
                 block[0:x_end, 0:y_end] = np.mean(cropped_r, dtype=int), np.mean(cropped_g, dtype=int), np.mean(
                     cropped_b, dtype=int)
-                cv2.putText(block, str(i) + "," + str(j), (int(pixel_y / 2), int(pixel_x / 2)),
+                cv2.putText(block, str(j+1) + "," + str(i+1), (int(pixel_y / 2), int(pixel_x / 2)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0))
                 org_img[x_start:x_end, y_start:y_end] = block
 
@@ -64,7 +64,7 @@ def mosaic_image(img): #모자이크 이미지
                 cropped_b = img[x_start:x_end, y_start:y_end, 2]
                 block = np.zeros_like(org_img[x_start:x_end, y_start:y_end])
                 block[0:x_end, 0:y_end] = np.median(cropped_r), np.median(cropped_g), np.median(cropped_b)
-                cv2.putText(block, str(i) + "," + str(j), (int(pixel_y / 2), int(pixel_x / 2)),
+                cv2.putText(block, str(j+1) + "," + str(i+1), (int(pixel_y / 2), int(pixel_x / 2)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0))
                 org_img[x_start:x_end, y_start:y_end] = block
 
@@ -80,7 +80,7 @@ def mosaic_image(img): #모자이크 이미지
                 cropped_b = img[int((x_start + x_end) / 2), int((y_start + y_end) / 2), 2]
                 block = np.zeros_like(org_img[x_start:x_end, y_start:y_end])
                 block[0:x_end, 0:y_end] = cropped_r, cropped_g, cropped_b
-                cv2.putText(block, str(i) + "," + str(j), (int(pixel_y / 2), int(pixel_x / 2)),
+                cv2.putText(block, str(j+1) + "," + str(i+1), (int(pixel_y / 2), int(pixel_x / 2)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0))
                 org_img[x_start:x_end, y_start:y_end] = block
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
     while True:
         if k == ord('r'):
-            img_show = display_size(original_img)
+            img_show = display_text(original_img, path)
             original_img = cv2.imread(path, 1)
         elif k == ord('g'):
             img_show = gray_scale(original_img)
