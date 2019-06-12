@@ -1,0 +1,61 @@
+import cv2
+import numpy as np
+import math
+
+#원본이미지
+img = cv2.imread("/home/countryyoon/skin4.jpg")
+
+#배
+b_frame = np.copy(img)
+w_frame = np.copy(img)
+r_frame = np.copy(img)
+
+#범위설정
+black_lower = np.array([5, 45, 60], dtype = "uint8")
+black_upper = np.array([45, 225, 200], dtype = "uint8")
+
+white_lower = np.array([0, 0, 130], dtype = "uint8")
+white_upper = np.array([35, 120, 255], dtype = "uint8")
+
+r_lower = np.array([5, 45, 130], dtype = "uint8")
+r_upper = np.array([35, 120, 200], dtype = "uint8")
+
+#변환
+converted = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+#마스크생성
+blackMask = cv2.inRange(converted, black_lower, black_upper)
+whiteMask = cv2.inRange(converted, white_lower, white_upper)
+rMask = cv2.inRange(converted, r_lower, r_upper)
+
+#흑인백인피부모두검출되는부분 빨간색 마스킹
+for i in range (0, r_frame.shape[0]):
+    for j in range(0, r_frame.shape[1]):
+        if rMask[i][j] != 0:
+            r_frame[i][j] = [0, 0, 255]
+        else:
+            pass
+
+newMask = np.zeros_like(rMask)
+
+for i in range (0, r_frame.shape[0]):
+    for j in range(0, r_frame.shape[1]):
+        if blackMask[i][j] == 0 and whiteMask[i][j] == 0:
+            newMask[i][j] = 0
+        else:
+            newMask[i][j] = 1
+
+#마스크 씌우기
+b_img = cv2.bitwise_and(b_frame, b_frame, mask=blackMask)
+w_img = cv2.bitwise_and(w_frame, w_frame, mask=whiteMask)
+r_img = cv2.bitwise_and(r_frame, r_frame, mask=newMask)
+
+#사진 합치기
+v1 = np.vstack([img, w_img])
+v2 = np.vstack([b_img, r_img])
+frame = np.hstack([v1, v2])
+
+#띄우기
+cv2.imshow('frame', frame)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
