@@ -1,0 +1,87 @@
+import cv2
+import numpy as np
+
+# 차량 사진을 띄울 창 만들기
+windowName1 = 'Car Number'
+windowName2 = 'Cutted Car'
+cv2.namedWindow(windowName1)
+
+# 파일 경로와 사진 읽어오기
+path = "carnumber1.jpg"
+img = cv2.imread(path, 1)
+
+# 이진처리를 위해 변환하기
+converted = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+# 마스크를 만들기 위한 범위 생성 및 마스크 생성
+lower = np.array([0, 0, 100], dtype = "uint8")
+upper = np.array([180, 80, 255], dtype = "uint8")    
+Mask = cv2.inRange(converted, lower, upper)
+
+# 점의 개수와 번호판의 4 point를 저장할 변수
+count = 0
+point = []
+
+
+# 번호판 위치 받고 변환하기
+def get_interesting(event, x, y, flags, param):
+    global count
+
+    if event == cv2.EVENT_LBUTTONDOWN:
+        if count < 4:
+            point.append([x, y])
+            count = count + 1
+            cv2.circle(Mask, (x, y), 5, (0, 0, 255), -1)
+            cv2.imshow(windowName1, Mask)
+    
+    point1 = np.float32(point)
+    point2 = np.float32([[0, 0], [500, 0], [0, 130], [500, 130]])
+    
+    P = cv2.getPerspectiveTransform(point1, point2)
+    output = cv2.warpPerspective(img, P, (500, 130))    
+    cv2.imshow(windowName2, output)
+        
+
+# 마우스 이벤트 받기    
+cv2.setMouseCallback(windowName1, get_interesting)
+
+
+#메인
+def main():
+    cv2.imshow(windowName1, img)
+    cv2.waitKey(0)
+    #cv2.destroyWindow('Original')
+    
+    cv2.imshow(windowName1, Mask)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows() 
+    
+
+#실행    
+if __name__ == "__main__":
+    main()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
